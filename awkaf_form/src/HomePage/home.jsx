@@ -95,13 +95,33 @@ const ArabicForm = () => {
     return newErrors;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const newErrors = validateForm();
     
     if (Object.keys(newErrors).length === 0) {
-      console.log('Form submitted:', formData);
-      navigate('/thankyou');
+      try {
+        const response = await fetch('http://localhost:3000/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData)
+        });
+
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+
+        console.log('Form submitted:', formData);
+        navigate('/thankyou');
+      } catch (error) {
+        console.error('Error submitting form:', error);
+        setErrors(prev => ({
+          ...prev,
+          submit: 'حدث خطأ أثناء إرسال النموذج. يرجى المحاولة مرة أخرى.'
+        }));
+      }
     } else {
       setErrors(newErrors);
     }
