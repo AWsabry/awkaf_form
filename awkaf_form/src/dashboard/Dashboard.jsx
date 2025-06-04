@@ -7,6 +7,11 @@ const Dashboard = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [sortField, setSortField] = useState('name');
   const [sortDirection, setSortDirection] = useState('asc');
+  const [filters, setFilters] = useState({
+    governorate: '',
+    qualification: '',
+    recitationType: ''
+  });
   const itemsPerPage = 10;
 
   useEffect(() => {
@@ -63,6 +68,11 @@ const Dashboard = () => {
         value.toString().toLowerCase().includes(searchTerm.toLowerCase())
       )
     )
+    .filter(submission => 
+      (!filters.governorate || submission.governorate === filters.governorate) &&
+      (!filters.qualification || submission.qualification === filters.qualification) &&
+      (!filters.recitationType || submission.recitationType === filters.recitationType)
+    )
     .sort((a, b) => {
       const aValue = a[sortField];
       const bValue = b[sortField];
@@ -77,6 +87,58 @@ const Dashboard = () => {
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
+
+  const exportToCSV = () => {
+    // Define the headers for the CSV
+    const headers = [
+      'الاسم',
+      'الرقم القومي',
+      'السن',
+      'المحافظة',
+      'المؤهل',
+      'الوظيفة',
+      'رقم الموبايل',
+      'نوع التلاوة'
+    ];
+
+    // Convert the filtered data to CSV format
+    const csvData = filteredSubmissions.map(submission => [
+      submission.name,
+      submission.nationalId,
+      submission.age,
+      submission.governorate,
+      submission.qualification,
+      submission.job,
+      submission.mobile,
+      submission.recitationType
+    ]);
+
+    // Combine headers and data
+    const csvContent = [
+      headers.join(','),
+      ...csvData.map(row => row.join(','))
+    ].join('\n');
+
+    // Add BOM for proper Arabic encoding
+    const BOM = '\uFEFF';
+    const csvContentWithBOM = BOM + csvContent;
+
+    // Create a Blob with proper encoding
+    const blob = new Blob([csvContentWithBOM], { 
+      type: 'text/csv;charset=utf-8-sig'
+    });
+    
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    
+    link.setAttribute('href', url);
+    link.setAttribute('download', `submissions_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   if (loading) {
     return (
@@ -100,8 +162,55 @@ const Dashboard = () => {
     <div className="min-h-screen bg-gray-100 p-6" dir="rtl">
       <div className="max-w-7xl mx-auto">
         <div className="bg-white rounded-lg shadow-lg p-6">
-          <h1 className="text-3xl font-bold text-gray-800 mb-6">لوحة التحكم</h1>
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-3xl font-bold text-gray-800">لوحة التحكم</h1>
+            <button
+              onClick={exportToCSV}
+              className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition duration-200 flex items-center gap-2"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
+              </svg>
+              تصدير CSV
+            </button>
+          </div>
           
+          {/* Filters */}
+          <div className="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+            <select
+              value={filters.governorate}
+              onChange={(e) => setFilters(prev => ({ ...prev, governorate: e.target.value }))}
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="">كل المحافظات</option>
+              {[...new Set(submissions.map(s => s.governorate))].map(gov => (
+                <option key={gov} value={gov}>{gov}</option>
+              ))}
+            </select>
+
+            <select
+              value={filters.qualification}
+              onChange={(e) => setFilters(prev => ({ ...prev, qualification: e.target.value }))}
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="">كل المؤهلات</option>
+              {[...new Set(submissions.map(s => s.qualification))].map(qual => (
+                <option key={qual} value={qual}>{qual}</option>
+              ))}
+            </select>
+
+            <select
+              value={filters.recitationType}
+              onChange={(e) => setFilters(prev => ({ ...prev, recitationType: e.target.value }))}
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="">كل أنواع التلاوة</option>
+              {[...new Set(submissions.map(s => s.recitationType))].map(type => (
+                <option key={type} value={type}>{type}</option>
+              ))}
+            </select>
+          </div>
+
           {/* Search Bar */}
           <div className="mb-6">
             <input
