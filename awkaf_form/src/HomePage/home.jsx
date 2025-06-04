@@ -100,12 +100,14 @@ const ArabicForm = () => {
     const newErrors = validateForm();
     
     if (Object.keys(newErrors).length === 0) {
+      console.log(`${import.meta.env.VITE_API_URL}`);
       try {
-        const response = await fetch('http://15.237.144.99:5000/', {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-          },
+          }, 
+          credentials: 'include', // Add this line to include credentials
           body: JSON.stringify(formData)
         });
 
@@ -214,7 +216,7 @@ const ArabicForm = () => {
                   الرقم القومي <span className="text-red-500">*</span>
                 </label>
                 <input
-                  type="text"
+                  type="tel"
                   name="nationalId"
                   value={formData.nationalId}
                   onChange={handleChange}
