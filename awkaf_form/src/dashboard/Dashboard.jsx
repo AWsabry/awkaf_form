@@ -17,7 +17,7 @@ const Dashboard = () => {
   const fetchSubmissions = async () => {
     try {
       const key = 'a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6';
-      const response = await fetch(`http://localhost:3000/data?key=${key}`);
+      const response = await fetch(`http://15.237.144.99:5000/data?key=${key}`);
       if (!response.ok) {
         throw new Error('Failed to fetch submissions');
       }
@@ -33,7 +33,7 @@ const Dashboard = () => {
   const handleDelete = async (id) => {
     if (window.confirm('هل أنت متأكد من حذف هذا السجل؟')) {
       try {
-        const response = await fetch(`http://localhost:3000/${id}`, {
+        const response = await fetch(`http://15.237.144.99:5000/${id}`, {
           method: 'DELETE',
         });
 

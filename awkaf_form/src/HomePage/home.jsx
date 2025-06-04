@@ -101,7 +101,7 @@ const ArabicForm = () => {
     
     if (Object.keys(newErrors).length === 0) {
       try {
-        const response = await fetch('http://localhost:3000/', {
+        const response = await fetch('http://15.237.144.99:5000/', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
