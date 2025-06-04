@@ -7,15 +7,13 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Dependency directories
 node_modules
 dist
 dist-ssr
-*.local
 
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
+# Local environment and system files
+*.local
 .DS_Store
 *.suo
 *.ntvs*
@@ -23,6 +21,14 @@ dist-ssr
 *.sln
 *.sw?
 
+# SQLite DB
+*.db
 
+# Environment configuration
 .env
 .env.development
+
+# Editor settings
+.vscode/*
+!.vscode/extensions.json
+.idea
