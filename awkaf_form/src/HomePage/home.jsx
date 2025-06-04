@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ThankYou from '../ThankYouPage/ThankYou';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
 const ArabicForm = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -100,14 +102,13 @@ const ArabicForm = () => {
     const newErrors = validateForm();
     
     if (Object.keys(newErrors).length === 0) {
-      console.log(`${import.meta.env.VITE_API_URL}`);
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL}`, {
+        const response = await fetch(`${API_URL}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           }, 
-          credentials: 'include', // Add this line to include credentials
+          credentials: 'include',
           body: JSON.stringify(formData)
         });
 

@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from 'react';
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
 const Dashboard = () => {
   const [submissions, setSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -21,7 +24,7 @@ const Dashboard = () => {
   const fetchSubmissions = async () => {
     try {
       const key = 'a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6';
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/data?key=${key}`);
+      const response = await fetch(`${API_URL}/data?key=${key}`);
       if (!response.ok) {
         throw new Error('Failed to fetch submissions');
       }
@@ -29,7 +32,7 @@ const Dashboard = () => {
       setSubmissions(data);
       setLoading(false);
     } catch (err) {
-      setError('Error loading submissions');
+      setError('Error loading submissions: ' + err.message);
       setLoading(false);
     }
   };
@@ -37,7 +40,7 @@ const Dashboard = () => {
   const handleDelete = async (id) => {
     if (window.confirm('هل أنت متأكد من حذف هذا السجل؟')) {
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/${id}`, {
+        const response = await fetch(`${API_URL}/${id}`, {
           method: 'DELETE',
         });
 
@@ -48,7 +51,7 @@ const Dashboard = () => {
         // Remove the deleted item from the state
         setSubmissions(submissions.filter(submission => submission.id !== id));
       } catch (err) {
-        setError('Error deleting submission');
+        setError('Error deleting submission: ' + err.message);
       }
     }
   };
