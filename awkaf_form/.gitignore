@@ -25,8 +25,6 @@ dist-ssr
 *.db
 
 # Environment configuration
-.env
-.env.development
 
 # Editor settings
 .vscode/*
