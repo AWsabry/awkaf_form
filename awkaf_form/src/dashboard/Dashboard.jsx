@@ -8,8 +8,8 @@ const Dashboard = () => {
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [sortField, setSortField] = useState('name');
-  const [sortDirection, setSortDirection] = useState('asc');
+  const [sortField, setSortField] = useState('id');
+  const [sortDirection, setSortDirection] = useState('desc');
   const [filters, setFilters] = useState({
     governorate: '',
     qualification: '',
@@ -79,6 +79,15 @@ const Dashboard = () => {
     .sort((a, b) => {
       const aValue = a[sortField];
       const bValue = b[sortField];
+      
+      // Handle numeric values (like id) differently
+      if (sortField === 'id' || sortField === 'age') {
+        return sortDirection === 'asc' 
+          ? Number(aValue) - Number(bValue)
+          : Number(bValue) - Number(aValue);
+      }
+      
+      // Handle string values
       if (sortDirection === 'asc') {
         return aValue > bValue ? 1 : -1;
       }
@@ -232,6 +241,12 @@ const Dashboard = () => {
                 <tr className="bg-gray-100">
                   <th 
                     className="px-6 py-3 text-right cursor-pointer"
+                    onClick={() => handleSort('id')}
+                  >
+                    الرقم التسلسلي {sortField === 'id' && (sortDirection === 'asc' ? '↑' : '↓')}
+                  </th>
+                  <th 
+                    className="px-6 py-3 text-right cursor-pointer"
                     onClick={() => handleSort('name')}
                   >
                     الاسم {sortField === 'name' && (sortDirection === 'asc' ? '↑' : '↓')}
@@ -286,6 +301,7 @@ const Dashboard = () => {
               <tbody>
                 {paginatedSubmissions.map((submission, index) => (
                   <tr key={index} className="border-b hover:bg-gray-50">
+                    <td className="px-6 py-4">{submission.id}</td>
                     <td className="px-6 py-4">{submission.name}</td>
                     <td className="px-6 py-4">{submission.nationalId}</td>
                     <td className="px-6 py-4">{submission.age}</td>
